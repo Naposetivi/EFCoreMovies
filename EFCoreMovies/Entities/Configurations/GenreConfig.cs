@@ -10,6 +10,8 @@ namespace EFCoreMovies.Entities.Configurations
         {
             //modelBuilder.Entity<Genre>().HasKey(p => p.Identifier);
             builder.Property(P => P.Name).IsRequired();
+
+            builder.HasQueryFilter(g => !g.IsDeleted);
         }
     }
 }

@@ -22,19 +22,55 @@ namespace EFCoreMovies.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<ActorDTO>> Get(int page = 1, int recordsToTake = 2)
+        public async Task<IEnumerable<ActorDTO>> Get()
         {
             return await context.Actors.AsNoTracking()
                 .OrderBy(a => a.Name)
                 .ProjectTo<ActorDTO>(mapper.ConfigurationProvider)
-                .Paginate(page, recordsToTake)
                 .ToListAsync();
         }
 
-        [HttpGet("Ids")]
-        public async Task<IEnumerable<int>> GetIds()
+        [HttpPost]
+        public async Task<ActionResult> Post(ActorCreationDTO actorCreationDTO)
         {
-            return await context.Actors.Select(a => a.Id).ToListAsync();
+            var actor = mapper.Map<Actor>(actorCreationDTO);
+            context.Add(actor);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Put(ActorCreationDTO actorCreationDTO, int id)
+        {
+            var actorDB = await context.Actors.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (actorDB is null)
+            {
+                return NotFound();
+            }
+
+            actorDB = mapper.Map(actorCreationDTO, actorDB);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        [HttpPut("disconnected/{id:int}")]
+        public async Task<ActionResult> PutDisconnected(ActorCreationDTO actorCreationDTO, int id)
+        {
+            var existsActor = await context.Actors.AnyAsync(p => p.Id == id);
+
+            if (!existsActor)
+            {
+                return NotFound();
+            }
+
+            var actor = mapper.Map<Actor>(actorCreationDTO);
+            actor.Id = id;
+
+            context.Update(actor);
+            await context.SaveChangesAsync();
+            return Ok();
         }
     }
 }
