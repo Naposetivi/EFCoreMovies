@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using EFCoreMovies.DTOs;
 using EFCoreMovies.Entities;
+using EFCoreMovies.Entities.Keyless;
 using EFCoreMovies.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,12 @@ namespace EFCoreMovies.Controllers
             return await context.Cinemas.ProjectTo<CinemaDTO>(mapper.ConfigurationProvider).ToListAsync();
         }
 
+        [HttpGet("withoutLocation")]
+        public async Task<IEnumerable<CinemaWithoutLocation>> GetWithoutLocation()
+        {
+            return await context.CinemasWithoutLocations.ToListAsync();
+        }
+
         [HttpGet("closetome")]
         public async Task<ActionResult> Get(double logitude, double latitude)
         {
@@ -51,15 +58,15 @@ namespace EFCoreMovies.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post()
+       public async Task<ActionResult> Post()
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-            var myLocation = geometryFactory.CreatePoint(new Coordinate(-69, 18));
+            var cinemaLocation = geometryFactory.CreatePoint(new Coordinate(-69.913539, 18.476256));
 
             var cinema = new Cinema()
             {
                 Name = "My cinema",
-                Location = myLocation,
+                Location = cinemaLocation,
                 CinemaOffer = new CinemaOffer()
                 {
                     DiscountPercentage = 5,
@@ -71,19 +78,23 @@ namespace EFCoreMovies.Controllers
                     new CinemaHall()
                     {
                         Cost = 200,
+                        Currency = Currency.DominicanPeso,
                         CinemaHallType = CinemaHallTypes.TwoDimensions
                     },
-                    new CinemaHall()
+                     new CinemaHall()
                     {
                         Cost = 250,
+                        Currency = Currency.USDollar,
                         CinemaHallType = CinemaHallTypes.ThreeDimensions
                     }
                 }
             };
+
             context.Add(cinema);
             await context.SaveChangesAsync();
-            return Ok(cinema);
+            return Ok();
         }
+
 
 
         [HttpPost("withDTO")]

@@ -24,10 +24,30 @@ namespace EFCoreMovies.Controllers
         public async Task<IEnumerable<Genre>> Get()
         {
             return await context.Genres.AsNoTracking()
-                .OrderBy(g => g.Name)
+                .OrderByDescending(g => EF.Property<DateTime>(g, "CreatedDate"))
                 .ToListAsync();
         }
 
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Genre>> Get(int id)
+        {
+            var genre = await context.Genres.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (genre is null)
+            {
+                return NotFound();
+            }
+
+            var createdDate = context.Entry(genre).Property<DateTime>("CreatedDate").CurrentValue;
+
+            return Ok(new
+            {
+                Id = genre.Id,
+                Name = genre.Name,
+                CreateDate = createdDate
+            });
+        }
 
         [HttpPost("add2")]
         public async Task<ActionResult> Add2(int id)
@@ -47,6 +67,13 @@ namespace EFCoreMovies.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(GenreCreationDTO genreCreationDTO)
         {
+            var genreExists = await context.Genres.AnyAsync(g => g.Name == genreCreationDTO.Name);
+
+            if (genreExists)
+            {
+                return BadRequest($"The genre with name {genreCreationDTO.Name} is already exists.");
+            }
+
             var genre = mapper.Map<Genre>(genreCreationDTO);
 
             context.Add(genre);
@@ -73,7 +100,7 @@ namespace EFCoreMovies.Controllers
         {
             var genre = await context.Genres.FirstOrDefaultAsync(p => p.Id == id);
 
-            if(genre is null)
+            if (genre is null)
             {
                 return NotFound();
             }

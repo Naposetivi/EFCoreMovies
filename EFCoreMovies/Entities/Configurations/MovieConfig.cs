@@ -10,6 +10,8 @@ namespace EFCoreMovies.Entities.Configurations
         {
             builder.Property(p => p.Title).HasMaxLength(250).IsRequired();
             builder.Property(p => p.PosterURL).HasMaxLength(500).IsUnicode(false);
+
+            
         }
     }
 }

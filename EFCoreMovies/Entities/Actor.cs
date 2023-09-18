@@ -1,4 +1,6 @@
-﻿namespace EFCoreMovies.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EFCoreMovies.Entities
 {
     public class Actor
     {
@@ -16,6 +18,32 @@
         }
         public string Biography { get; set; }
         public DateTime? DateOfBirth { get; set; }
+        [NotMapped]
+        public int? Age
+        {
+            get
+            {
+                if (!DateOfBirth.HasValue)
+                {
+                    return null;
+                }
+
+                var dob = DateOfBirth.Value;
+
+                var age = DateTime.Today.Year - dob.Year;
+
+                if(new DateTime(DateTime.Today.Year, dob.Month, dob.Day) > DateTime.Today)
+                {
+                    age--;
+                }
+
+                return age;
+            }
+        }
+        public string PictureURL { get; set; }
+
         public HashSet<MovieActor> MovieActor { get; set; }
+
+        public Address Address { get; set; }
     }
 }
