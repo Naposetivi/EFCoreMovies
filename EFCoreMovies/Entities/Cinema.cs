@@ -10,5 +10,6 @@ namespace EFCoreMovies.Entities
         public CinemaOffer CinemaOffer { get; set; }
         public HashSet<CinemaHall> CinemaHalls { get; set; }
         public Address Address { get; set; }
+        public CinemaDetail CinemaDetail { get; set; }
     }
 }

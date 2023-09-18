@@ -9,6 +9,10 @@ namespace EFCoreMovies.Entities.Configurations
         public void Configure(EntityTypeBuilder<Cinema> builder)
         {
             builder.Property(p => p.Name).IsRequired();
+
+            builder.HasOne(c => c.CinemaDetail).WithOne(c => c.Cinema).HasForeignKey<CinemaDetail>(cd => cd.Id);
         }
+
+        
     }
 }

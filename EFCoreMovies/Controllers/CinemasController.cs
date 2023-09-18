@@ -58,7 +58,7 @@ namespace EFCoreMovies.Controllers
         }
 
         [HttpPost]
-       public async Task<ActionResult> Post()
+        public async Task<ActionResult> Post()
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
             var cinemaLocation = geometryFactory.CreatePoint(new Coordinate(-69.913539, 18.476256));
@@ -67,6 +67,11 @@ namespace EFCoreMovies.Controllers
             {
                 Name = "My cinema",
                 Location = cinemaLocation,
+                CinemaDetail = new CinemaDetail()
+                {
+                    History = "The History...",
+                    Missions = "The Missions..."
+                },
                 CinemaOffer = new CinemaOffer()
                 {
                     DiscountPercentage = 5,
@@ -110,17 +115,53 @@ namespace EFCoreMovies.Controllers
         public async Task<ActionResult> Put(CinemaCreationDTO cinemaCreationDTO, int id)
         {
             var cinemaDB = await context.Cinemas
-                .Include(c => c.CinemaHalls)
-                .Include(c => c.CinemaOffer)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                 .Include(c => c.CinemaHalls)
+                 .Include(c => c.CinemaOffer)
+                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if(cinemaDB == null)
+            if (cinemaDB == null)
             {
                 return NotFound();
             }
 
             cinemaDB = mapper.Map(cinemaCreationDTO, cinemaDB);
             await context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> Get(int id)
+        {
+            var cinemaDB = await context.Cinemas
+               .Include(c => c.CinemaHalls)
+               .Include(c => c.CinemaOffer)
+               .Include(c => c.CinemaDetail)
+               .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cinemaDB is null)
+            {
+                return NotFound();
+            }
+
+            cinemaDB.Location = null;
+
+            return Ok(cinemaDB);
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var cinema = await context.Cinemas.Include(p => p.CinemaHalls).FirstOrDefaultAsync(p => p.Id == id);
+
+            if (cinema is null)
+            {
+                return NotFound();
+            }
+
+            context.Remove(cinema);
+
+            await context.SaveChangesAsync();
+
             return Ok();
         }
 

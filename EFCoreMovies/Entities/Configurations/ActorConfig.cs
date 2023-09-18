@@ -11,7 +11,7 @@ namespace EFCoreMovies.Entities.Configurations
             builder.Property(P => P.Name).IsRequired();
             builder.Property(p => p.Biography).HasColumnType("nvarchar(max)");
 
-            builder.Ignore(p => p.Age);
+            //builder.Ignore(p => p.Age);
         }
     }
 }

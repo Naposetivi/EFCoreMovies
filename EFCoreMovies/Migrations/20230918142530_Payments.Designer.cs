@@ -4,6 +4,7 @@ using EFCoreMovies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,11 @@ using NetTopologySuite.Geometries;
 namespace EFCoreMovies.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230918142530_Payments")]
+    partial class Payments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -748,29 +751,6 @@ namespace EFCoreMovies.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCoreMovies.Entities.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products");
-
-                    b.UseTptMappingStrategy();
-                });
-
             modelBuilder.Entity("GenreMovie", b =>
                 {
                     b.Property<int>("GenresId")
@@ -908,60 +888,6 @@ namespace EFCoreMovies.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCoreMovies.Entities.Merchandising", b =>
-                {
-                    b.HasBaseType("EFCoreMovies.Entities.Product");
-
-                    b.Property<bool>("Available")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsClothing")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCollectionable")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("Volume")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("float");
-
-                    b.ToTable("Merchandising", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 2,
-                            Name = "One Piece T-Shirt",
-                            Price = 11m,
-                            Available = true,
-                            IsClothing = true,
-                            IsCollectionable = false,
-                            Volume = 1.0,
-                            Weight = 1.0
-                        });
-                });
-
-            modelBuilder.Entity("EFCoreMovies.Entities.RentableMovie", b =>
-                {
-                    b.HasBaseType("EFCoreMovies.Entities.Product");
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.ToTable("RentableMovies", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Spider-Man",
-                            Price = 5.99m,
-                            MovieId = 1
-                        });
-                });
-
             modelBuilder.Entity("CinemaHallMovie", b =>
                 {
                     b.HasOne("EFCoreMovies.Entities.CinemaHall", null)
@@ -1055,24 +981,6 @@ namespace EFCoreMovies.Migrations
                     b.HasOne("EFCoreMovies.Entities.Movie", null)
                         .WithMany()
                         .HasForeignKey("MoviesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EFCoreMovies.Entities.Merchandising", b =>
-                {
-                    b.HasOne("EFCoreMovies.Entities.Product", null)
-                        .WithOne()
-                        .HasForeignKey("EFCoreMovies.Entities.Merchandising", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EFCoreMovies.Entities.RentableMovie", b =>
-                {
-                    b.HasOne("EFCoreMovies.Entities.Product", null)
-                        .WithOne()
-                        .HasForeignKey("EFCoreMovies.Entities.RentableMovie", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
