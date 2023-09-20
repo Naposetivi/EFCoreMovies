@@ -1,6 +1,7 @@
 ﻿using EFCoreMovies.Entities;
 using EFCoreMovies.Entities.Keyless;
 using EFCoreMovies.Entities.Seeding;
+using EFCoreMovies.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -8,8 +9,16 @@ namespace EFCoreMovies
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions options) : base(options)
+        public ApplicationDbContext(DbContextOptions options, IChangeTrackerEventHandler changeTrackerEventHandler) : base(options)
         {
+            if(changeTrackerEventHandler != null)
+            {
+                ChangeTracker.Tracked += changeTrackerEventHandler.TrackedHandler;
+                ChangeTracker.StateChanged += changeTrackerEventHandler.StateChangeHandler;
+                SavingChanges += changeTrackerEventHandler.SavingChangesHandler;
+                SavedChanges += changeTrackerEventHandler.SavedChangesHandler;
+                SaveChangesFailed += changeTrackerEventHandler.SaveChangesFailHandler;
+            }
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -69,6 +78,30 @@ namespace EFCoreMovies
             modelBuilder.Entity<Merchandising>().HasData(merch1);
             modelBuilder.Entity<RentableMovie>().HasData(movie1);
         }
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            ProcessSaveChanges();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void ProcessSaveChanges()
+        {
+            foreach (var item in ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Added && e.Entity is AuditableEntity))
+            {
+                var entity = item.Entity as AuditableEntity;
+                entity.CreatedBy = "Felipe";
+                entity.ModifiedBy = "Felipe";
+            }
+
+            foreach (var item in ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Modified && e.Entity is AuditableEntity))
+            {
+                var entity = item.Entity as AuditableEntity;
+                entity.ModifiedBy = "Felipe";
+                item.Property(nameof(entity.CreatedBy)).IsModified = false;
+            }
+        }
 
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Actor> Actors { get; set; }
@@ -84,5 +117,7 @@ namespace EFCoreMovies
         public DbSet<CinemaDetail> CinemaDetails { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<InvoiceDetail> InvoiceDetails { get; set; }
     }
 }
