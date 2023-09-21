@@ -4,6 +4,7 @@ using EFCoreMovies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,11 @@ using NetTopologySuite.Geometries;
 namespace EFCoreMovies.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230921160836_DataForInvoices")]
+    partial class DataForInvoices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,8 +25,6 @@ namespace EFCoreMovies.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.HasSequence<int>("InvoiceNumber", "invoice");
 
             modelBuilder.Entity("CinemaHallMovie", b =>
                 {
@@ -37,7 +38,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasIndex("MoviesId");
 
-                    b.ToTable("CinemaHallMovie", (string)null);
+                    b.ToTable("CinemaHallMovie");
 
                     b.HasData(
                         new
@@ -99,7 +100,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Actors", (string)null);
+                    b.ToTable("Actors");
 
                     b.HasData(
                         new
@@ -173,7 +174,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cinemas", (string)null);
+                    b.ToTable("Cinemas");
 
                     b.HasData(
                         new
@@ -258,7 +259,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasIndex("CinemaId");
 
-                    b.ToTable("CinemaHalls", (string)null);
+                    b.ToTable("CinemaHalls");
 
                     b.HasData(
                         new
@@ -353,7 +354,7 @@ namespace EFCoreMovies.Migrations
                     b.HasIndex("CinemaId")
                         .IsUnique();
 
-                    b.ToTable("CinemaOffers", (string)null);
+                    b.ToTable("CinemaOffers");
 
                     b.HasData(
                         new
@@ -408,7 +409,7 @@ namespace EFCoreMovies.Migrations
                     b.HasIndex("Name")
                         .HasFilter("IsDeleted = 'false'");
 
-                    b.ToTable("Genres", (string)null);
+                    b.ToTable("Genres");
 
                     b.HasData(
                         new
@@ -456,7 +457,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Invoices", (string)null);
+                    b.ToTable("Invoices");
 
                     b.HasData(
                         new
@@ -500,133 +501,96 @@ namespace EFCoreMovies.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Total")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)")
-                        .HasComputedColumnSql("Quantity * Price");
-
                     b.HasKey("Id");
 
                     b.HasIndex("InvoiceId");
 
-                    b.ToTable("InvoiceDetails", (string)null);
+                    b.ToTable("InvoiceDetails");
 
                     b.HasData(
                         new
                         {
                             Id = 3,
                             InvoiceId = 2,
-                            Price = 350.99m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 350.99m
                         },
                         new
                         {
                             Id = 4,
                             InvoiceId = 2,
-                            Price = 10m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 10m
                         },
                         new
                         {
                             Id = 5,
                             InvoiceId = 2,
-                            Price = 45.50m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 45.50m
                         },
                         new
                         {
                             Id = 6,
                             InvoiceId = 3,
-                            Price = 17.99m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 17.99m
                         },
                         new
                         {
                             Id = 7,
                             InvoiceId = 3,
-                            Price = 14m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 14m
                         },
                         new
                         {
                             Id = 8,
                             InvoiceId = 3,
-                            Price = 45m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 45m
                         },
                         new
                         {
                             Id = 9,
                             InvoiceId = 3,
-                            Price = 100m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 100m
                         },
                         new
                         {
                             Id = 10,
                             InvoiceId = 4,
-                            Price = 371m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 371m
                         },
                         new
                         {
                             Id = 11,
                             InvoiceId = 4,
-                            Price = 114.99m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 114.99m
                         },
                         new
                         {
                             Id = 12,
                             InvoiceId = 4,
-                            Price = 425m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 425m
                         },
                         new
                         {
                             Id = 13,
                             InvoiceId = 4,
-                            Price = 1000m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 1000m
                         },
                         new
                         {
                             Id = 14,
                             InvoiceId = 4,
-                            Price = 5m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 5m
                         },
                         new
                         {
                             Id = 15,
                             InvoiceId = 4,
-                            Price = 2.99m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 2.99m
                         },
                         new
                         {
                             Id = 16,
                             InvoiceId = 5,
-                            Price = 50m,
-                            Quantity = 0,
-                            Total = 0m
+                            Price = 50m
                         });
                 });
 
@@ -685,7 +649,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Logs", (string)null);
+                    b.ToTable("Logs");
                 });
 
             modelBuilder.Entity("EFCoreMovies.Entities.Message", b =>
@@ -712,7 +676,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasIndex("SenderId");
 
-                    b.ToTable("Messages", (string)null);
+                    b.ToTable("Messages");
 
                     b.HasData(
                         new
@@ -771,7 +735,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies", (string)null);
+                    b.ToTable("Movies");
 
                     b.HasData(
                         new
@@ -835,7 +799,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasIndex("ActorId");
 
-                    b.ToTable("MoviesActors", (string)null);
+                    b.ToTable("MoviesActors");
 
                     b.HasData(
                         new
@@ -909,7 +873,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
 
                     b.HasDiscriminator<int>("PaymentType");
 
@@ -930,7 +894,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("People", (string)null);
+                    b.ToTable("People");
 
                     b.HasData(
                         new
@@ -963,7 +927,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
 
                     b.UseTptMappingStrategy();
                 });
@@ -980,7 +944,7 @@ namespace EFCoreMovies.Migrations
 
                     b.HasIndex("MoviesId");
 
-                    b.ToTable("GenreMovie", (string)null);
+                    b.ToTable("GenreMovie");
 
                     b.HasData(
                         new

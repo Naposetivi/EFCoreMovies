@@ -1,5 +1,7 @@
 ﻿using EFCoreMovies.Entities;
+using EFCoreMovies.Entities.Functions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EFCoreMovies.Controllers
 {
@@ -12,6 +14,28 @@ namespace EFCoreMovies.Controllers
         public InvoicesController(ApplicationDbContext context)
         {
             this.context = context;
+        }
+
+        [HttpGet("Scalars")]
+        public async Task<ActionResult> GetScalars()
+        {
+            var invoices = await context.Invoices.Select(f => new
+            {
+                Id = f.Id,
+                Total = context.InvoiceDetailSum(f.Id),
+                Average = Scalars.InvoiceDetailAverage(f.Id)
+            }).OrderByDescending(f => context.InvoiceDetailSum(f.Id)).ToListAsync();
+
+            return Ok(invoices);
+        }
+
+
+        [HttpGet("{invoiceId:int}/detail")]
+        public async Task<ActionResult<IEnumerable<InvoiceDetail>>> GetDetail(int invoiceId)
+        {
+            return await context.InvoiceDetails
+                .Where(p => p.InvoiceId == invoiceId)
+                .OrderByDescending(p => p.Total).ToListAsync();
         }
 
         [HttpPost]

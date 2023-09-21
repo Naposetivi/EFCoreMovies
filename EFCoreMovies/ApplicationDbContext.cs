@@ -1,4 +1,5 @@
 ﻿using EFCoreMovies.Entities;
+using EFCoreMovies.Entities.Functions;
 using EFCoreMovies.Entities.Keyless;
 using EFCoreMovies.Entities.Seeding;
 using EFCoreMovies.Utilities;
@@ -9,16 +10,16 @@ namespace EFCoreMovies
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions options, IChangeTrackerEventHandler changeTrackerEventHandler) : base(options)
+        public ApplicationDbContext(DbContextOptions options/*, IChangeTrackerEventHandler changeTrackerEventHandler*/) : base(options)
         {
-            if(changeTrackerEventHandler != null)
-            {
-                ChangeTracker.Tracked += changeTrackerEventHandler.TrackedHandler;
-                ChangeTracker.StateChanged += changeTrackerEventHandler.StateChangeHandler;
-                SavingChanges += changeTrackerEventHandler.SavingChangesHandler;
-                SavedChanges += changeTrackerEventHandler.SavedChangesHandler;
-                SaveChangesFailed += changeTrackerEventHandler.SaveChangesFailHandler;
-            }
+            //if(changeTrackerEventHandler != null)
+            //{
+            //    ChangeTracker.Tracked += changeTrackerEventHandler.TrackedHandler;
+            //    ChangeTracker.StateChanged += changeTrackerEventHandler.StateChangeHandler;
+            //    SavingChanges += changeTrackerEventHandler.SavingChangesHandler;
+            //    SavedChanges += changeTrackerEventHandler.SavedChangesHandler;
+            //    SaveChangesFailed += changeTrackerEventHandler.SaveChangesFailHandler;
+            //}
         }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -31,10 +32,23 @@ namespace EFCoreMovies
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
             Module3Seeding.Seed(modelBuilder);
             Module6Seeding.Seed(modelBuilder);
+            Module9Seeding.Seed(modelBuilder);
+            SomeConfiguration(modelBuilder);
+            Scalars.RegisterFunctions(modelBuilder);
 
+            
+        }
+
+        [DbFunction]
+        public int InvoiceDetailSum(int invoiceId)
+        {
+            return 0;
+        }
+
+        private void SomeConfiguration(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<CinemaWithoutLocation>().ToSqlQuery("Select Id, Nam FROM Cinemas").ToView(null);
 
             modelBuilder.Entity<MovieWithCount>().ToView("MoviesWithCounts");
@@ -78,30 +92,31 @@ namespace EFCoreMovies
             modelBuilder.Entity<Merchandising>().HasData(merch1);
             modelBuilder.Entity<RentableMovie>().HasData(movie1);
         }
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            ProcessSaveChanges();
-            return base.SaveChangesAsync(cancellationToken);
-        }
 
-        private void ProcessSaveChanges()
-        {
-            foreach (var item in ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Added && e.Entity is AuditableEntity))
-            {
-                var entity = item.Entity as AuditableEntity;
-                entity.CreatedBy = "Felipe";
-                entity.ModifiedBy = "Felipe";
-            }
+        //public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        //{
+        //    ProcessSaveChanges();
+        //    return base.SaveChangesAsync(cancellationToken);
+        //}
 
-            foreach (var item in ChangeTracker.Entries()
-                .Where(e => e.State == EntityState.Modified && e.Entity is AuditableEntity))
-            {
-                var entity = item.Entity as AuditableEntity;
-                entity.ModifiedBy = "Felipe";
-                item.Property(nameof(entity.CreatedBy)).IsModified = false;
-            }
-        }
+            //private void ProcessSaveChanges()
+            //{
+            //    foreach (var item in ChangeTracker.Entries()
+            //        .Where(e => e.State == EntityState.Added && e.Entity is AuditableEntity))
+            //    {
+            //        var entity = item.Entity as AuditableEntity;
+            //        entity.CreatedBy = "Felipe";
+            //        entity.ModifiedBy = "Felipe";
+            //    }
+
+            //    foreach (var item in ChangeTracker.Entries()
+            //        .Where(e => e.State == EntityState.Modified && e.Entity is AuditableEntity))
+            //    {
+            //        var entity = item.Entity as AuditableEntity;
+            //        entity.ModifiedBy = "Felipe";
+            //        item.Property(nameof(entity.CreatedBy)).IsModified = false;
+            //    }
+            //}
 
         public DbSet<Genre> Genres { get; set; }
         public DbSet<Actor> Actors { get; set; }
