@@ -13,11 +13,13 @@ namespace EFCoreMovies.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
+        private readonly ILogger<GenresController> logger;
 
-        public GenresController(ApplicationDbContext context, IMapper mapper)
+        public GenresController(ApplicationDbContext context, IMapper mapper, ILogger<GenresController> logger)
         {
             this.context = context;
             this.mapper = mapper;
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -77,7 +79,6 @@ namespace EFCoreMovies.Controllers
             var genre = mapper.Map<Genre>(genreCreationDTO);
 
             context.Add(genre);
-
             await context.SaveChangesAsync();
 
             return Ok();

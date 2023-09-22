@@ -32,10 +32,17 @@ namespace EFCoreMovies
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            Module3Seeding.Seed(modelBuilder);
-            Module6Seeding.Seed(modelBuilder);
-            Module9Seeding.Seed(modelBuilder);
+
+            if (!Database.IsInMemory())
+            {
+                Module3Seeding.Seed(modelBuilder);
+                Module6Seeding.Seed(modelBuilder);
+                Module9Seeding.Seed(modelBuilder);
+
+            }
+
             SomeConfiguration(modelBuilder);
+
             Scalars.RegisterFunctions(modelBuilder);
 
             
